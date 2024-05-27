@@ -11,6 +11,7 @@
 // 이 함수는 underbar의 기능 구현 및 테스트를 위해 재사용되는 함수입니다.
 _.identity = function (val) {
   // TODO: 여기에 코드를 작성합니다.
+  return val;
 };
 
 /**
@@ -110,23 +111,62 @@ _.slice = function (arr, start, end) {
 // _.take는 배열의 처음 n개의 element를 담은 새로운 배열을 리턴합니다.
 // n이 undefined이거나 음수인 경우, 빈 배열을 리턴합니다.
 // n이 배열의 길이를 벗어날 경우, 전체 배열을 shallow copy한 새로운 배열을 리턴합니다.
+// let arr = [1, 3, 5, 7, 9], take(arr, 3) -> [1, 3, 5]
 _.take = function (arr, n) {
   // TODO: 여기에 코드를 작성합니다.
-};
+  // 새로운 배열을 리턴
+    if (n === undefined || n < 0) {
+      return [];
+    } 
+    if (n > arr.length) {
+      return arr;
+    } 
+    const result = [];
+      for (let i = 0; i < n; i++) {
+        result.push(arr[i]);
+      }
+        return result;
+    };
 
 // _.drop는 _.take와는 반대로, 처음 n개의 element를 제외한 새로운 배열을 리턴합니다.
 // n이 undefined이거나 음수인 경우, 전체 배열을 shallow copy한 새로운 배열을 리턴합니다.
 // n이 배열의 길이를 벗어날 경우, 빈 배열을 리턴합니다.
 _.drop = function (arr, n) {
   // TODO: 여기에 코드를 작성합니다.
-};
 
+  if (n === undefined || n < 0) {
+      return arr;
+  } 
+  if (n >= arr.length) {
+      return [];
+  } 
+  let result = []; 
+    for (let i = n; i < arr.length; i++) {
+        result.push(arr[i]);
+      }
+      return result;
+  };
 // _.last는 배열의 마지막 n개의 element를 담은 새로운 배열을 리턴합니다.
 // n이 undefined이거나 음수인 경우, 배열의 마지막 요소만을 담은 배열을 리턴합니다.
 // n이 배열의 길이를 벗어날 경우, 전체 배열을 shallow copy한 새로운 배열을 리턴합니다.
 // _.take와 _.drop 중 일부 또는 전부를 활용할 수 있습니다.
 _.last = function (arr, n) {
   // TODO: 여기에 코드를 작성합니다.
+
+  if (n === undefined || n < 0) {
+      return [arr[arr.length - 1]];
+      
+  } 
+  if (n >= arr.length) {
+      return arr;
+  } 
+  
+  const result = [];
+  for (let i = arr.length - n; i < arr.length; i++) {
+        result.push(arr[i]);
+      }
+      return result;
+  
 };
 
 // _.each는 collection의 각 데이터에 반복적인 작업을 수행합니다.
@@ -157,9 +197,20 @@ _.last = function (arr, n) {
  * 실제로 전달되는 callback 함수는 collection의 모든 정보가 필요하지 않을 수도 있습니다.
  */
 
-// _.each는 명시적으로 어떤 값을 리턴하지 않습니다.
+// if 객체, 배열 -> 각각요소 iteratee에 넣어준다. 객체일때는 value 배열일 때는 각각의 값 -> for 돌면서 iteratee 보내야함
+
+// _.each는 명시적으로 어떤 값을 리턴하지 않습니다. 순회만 한다. 반복문을 써서.
 _.each = function (collection, iteratee) {
   // TODO: 여기에 코드를 작성합니다.
+    if (Array.isArray(collection)) {
+      for (let i = 0; i < collection.length; i++) {
+        iteratee(collection[i], i, collection);
+      } 
+    } else if (typeof collection === 'object') {
+      for (let key of collection) {
+        iteratee(collection[key], key, collection)
+      }
+  }
 };
 
 // _.indexOf는 target으로 전달되는 값이 arr의 요소인 경우, 배열에서의 위치(index)를 리턴합니다.
@@ -185,11 +236,34 @@ _.indexOf = function (arr, target) {
 // test 함수는 각 요소에 반복 적용됩니다.
 _.filter = function (arr, test) {
   // TODO: 여기에 코드를 작성합니다.
+    let result = [];
+
+    // for (let i = 0; i < arr.length; i++) {
+    //   let currentEl = arr[i];
+    //   if (test(currentEl)) {
+    //       result.push(currentEl);
+    //   }
+    // }
+    _.each(arr, function(element, idx, arr) {
+      if (test(element)) {
+        result.push(element);
+      }
+    });
+    return result;
+
 };
 
 // _.reject는 _.filter와 정반대로 test 함수를 통과하지 않는 모든 요소를 담은 새로운 배열을 리턴합니다.
 _.reject = function (arr, test) {
   // TODO: 여기에 코드를 작성합니다.
+  let result = [];
+
+  for (let i = 0; i < arr.length; i++) {
+    let currentEl = arr[i];
+    if (!test(currentEl)) {
+      result.push(currentEl);
+    }
+  } return result;
 };
 
 // _.uniq는 주어진 배열의 요소가 중복되지 않도록 새로운 배열을 리턴합니다.
@@ -197,6 +271,16 @@ _.reject = function (arr, test) {
 // 입력으로 전달되는 배열의 요소는 모두 primitive value라고 가정합니다.
 _.uniq = function (arr) {
   // TODO: 여기에 코드를 작성합니다.
+
+  const result = [];
+
+  for (let i = 0; i < arr.length; i++) {
+    let currentEl = arr[i];
+    if (result.indexOf(currentEl) === -1) {
+      result.push(currentEl);
+    }
+  }
+  return result;
 };
 
 // _.map은 iteratee(반복되는 작업)를 배열의 각 요소에 적용(apply)한 결과를 담은 새로운 배열을 리턴합니다.
